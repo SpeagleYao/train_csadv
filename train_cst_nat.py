@@ -1,13 +1,13 @@
 from __future__ import print_function
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 import argparse
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.cuda.amp import autocast
-from torch.cuda.amp import GradScaler
+# from torch.cuda.amp import autocast
+# from torch.cuda.amp import GradScaler
 from torchvision import datasets, transforms
 import sys
 import time
@@ -51,10 +51,10 @@ torch.manual_seed(args.seed)
 device = torch.device("cuda" if use_cuda else "cpu")
 kwargs = {'num_workers': 4, 'pin_memory': True} if use_cuda else {}
 # TODO:
-log_filename = 'res18_cst_5.txt'
+log_filename = 'res18_cst_1way_10.txt'
 # # log_filename = 'wrn28_cst_nat.txt'
 sys.stdout = Logger(os.path.join(args.save_dir, log_filename))
-scaler = GradScaler()
+# scaler = GradScaler()
 criterion = cst_mat_loss()
 
 # setup data loader
@@ -80,12 +80,16 @@ def train(args, model, device, train_loader, optimizer, epoch):
         optimizer.zero_grad()
 
         # calculate robust loss
-        with autocast():
-            output = model(data)
-            loss = criterion(output, target)
-        scaler.scale(loss).backward()
-        scaler.step(optimizer)
-        scaler.update()
+        # with autocast():
+        #     output = model(data)
+        #     loss = criterion(output, target)
+        output = model(data)
+        loss = criterion(output, target)
+        loss.backward()
+        optimizer.step()
+        # scaler.scale(loss).backward()
+        # scaler.step(optimizer)
+        # scaler.update()
 
         # print progress
         if batch_idx % args.log_interval == 0:
@@ -163,7 +167,7 @@ def main():
     train_time = time.time()
     print('Total train time: {:.2f} minutes'.format((train_time - start_train_time)/60.0))
 # TODO:
-    model_name = 'res18_cst_5.pth'
+    model_name = 'res18_cst_1way_10.pth'
     # model_name = 'wrn28_cst_nat.pth'
     torch.save(model.state_dict(), os.path.join(model_dir, model_name))
 

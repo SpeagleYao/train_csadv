@@ -2,6 +2,7 @@
 cost-sensitive-adv/
 cp_*/
 log_*/
+result_*/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

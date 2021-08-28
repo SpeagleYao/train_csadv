@@ -6,8 +6,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.cuda.amp import autocast
-from torch.cuda.amp import GradScaler
+# from torch.cuda.amp import autocast
+# from torch.cuda.amp import GradScaler
 from torchvision import datasets, transforms
 import sys
 import time
@@ -53,7 +53,7 @@ kwargs = {'num_workers': 4, 'pin_memory': True} if use_cuda else {}
 log_filename = 'res18_natural.txt'
 # log_filename = 'wrn28_natural.txt'
 sys.stdout = Logger(os.path.join(args.save_dir, log_filename))
-scaler = GradScaler()
+# scaler = GradScaler()
 criterion = nn.CrossEntropyLoss()
 
 # setup data loader
@@ -79,12 +79,16 @@ def train(args, model, device, train_loader, optimizer, epoch):
         optimizer.zero_grad()
 
         # calculate robust loss
-        with autocast():
-            output = model(data)
-            loss = criterion(output, target)
-        scaler.scale(loss).backward()
-        scaler.step(optimizer)
-        scaler.update()
+        # with autocast():
+            # output = model(data)
+            # loss = criterion(output, target)
+        output = model(data)
+        loss = criterion(output, target)
+        loss.backward()
+        optimizer.step()
+        # scaler.scale(loss).backward()
+        # scaler.step(optimizer)
+        # scaler.update()
 
         # print progress
         if batch_idx % args.log_interval == 0:

@@ -30,7 +30,7 @@ parser.add_argument('--random',
                     help='random initialization for PGD')
 # TODO:
 parser.add_argument('--model-path',
-                    default='./cp_nat_res18/res18_cst_5.pth',
+                    default='./cp_nat_res18/res18_cst_2way_10.pth',
                     # default='./cp_nat_res18/res18_natural.pth',
                     help='model for white-box attack evaluation')
 parser.add_argument('--white-box-attack', default=True,
