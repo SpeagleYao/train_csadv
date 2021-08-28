@@ -13,7 +13,7 @@ import sys
 import time
 sys.path.append('..')
 
-from models import PreActResNet18
+from models import PreActResNet18, WRN_28_10
 from tqdm import tqdm
 from utils_logger import Logger
 
@@ -32,18 +32,12 @@ parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
                     help='SGD momentum')
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='disables CUDA training')
-parser.add_argument('--epsilon', default=0.031,
-                    help='perturbation')
-parser.add_argument('--num-steps', default=10,
-                    help='perturb number of steps')
-parser.add_argument('--step-size', default=0.007,
-                    help='perturb step size')
 parser.add_argument('--seed', type=int, default=1, metavar='S',
                     help='random seed (default: 1)')
 parser.add_argument('--log-interval', type=int, default=98, metavar='N',
                     help='how many batches to wait before logging training status')
-parser.add_argument('--save-dir', type=str, default='log_cifar10')
-parser.add_argument('--model-dir', default='cp_cifar10',
+parser.add_argument('--save-dir', type=str, default='log_natural')
+parser.add_argument('--model-dir', default='cp_natural',
                     help='directory of model for saving checkpoint')
 args = parser.parse_args()
 
@@ -56,7 +50,7 @@ torch.manual_seed(args.seed)
 device = torch.device("cuda" if use_cuda else "cpu")
 kwargs = {'num_workers': 4, 'pin_memory': True} if use_cuda else {}
 # TODO:
-log_filename = 'res18_natural.txt'
+log_filename = 'wrn28_natural.txt'
 sys.stdout = Logger(os.path.join(args.save_dir, log_filename))
 scaler = GradScaler()
 criterion = nn.CrossEntropyLoss()
@@ -149,7 +143,8 @@ def adjust_learning_rate(optimizer, epoch):
 def main():
     print("Let's use", torch.cuda.device_count(), "GPUs!")
     # init model, ResNet18() can be also used here for training
-    model = PreActResNet18().to(device)
+    model = WRN_28_10().to(device)
+    # model = PreActResNet18().to(device)
     optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
     start_train_time = time.time()
     for epoch in range(1, args.epochs + 1):
@@ -166,7 +161,7 @@ def main():
     train_time = time.time()
     print('Total train time: {:.2f} minutes'.format((train_time - start_train_time)/60.0))
 # TODO:
-    model_name = 'res18_natural.pth'
+    model_name = 'wrn28_natural.pth'
     torch.save(model.state_dict(), os.path.join(model_dir, model_name))
 
 

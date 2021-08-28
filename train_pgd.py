@@ -44,7 +44,7 @@ parser.add_argument('--seed', type=int, default=1, metavar='S',
 parser.add_argument('--log-interval', type=int, default=98, metavar='N',
                     help='how many batches to wait before logging training status')
 parser.add_argument('--save-dir', type=str, default='log_cifar10')
-parser.add_argument('--model-dir', default='cp_cifar10',
+parser.add_argument('--model-dir', default='cp_pgd',
                     help='directory of model for saving checkpoint')
 args = parser.parse_args()
 
